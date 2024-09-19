@@ -1,12 +1,22 @@
-import { query } from './db.js'; // Correctly importing the named export 'query'
+import { query } from './db.js'; 
 
-// Add an item to the cart
 export const addToCart = (product_id, name, description, price, image, quantity, callback) => {
     const sql = `INSERT INTO cart (product_id, name, description, price, image, quantity) VALUES (?, ?, ?, ?, ?, ?)`;
-    query(sql, [product_id, name, description, price, image, quantity], callback);
+
+    console.log('Executing SQL:', sql, [product_id, name, description, price, image, quantity]);
+
+    query(sql, [product_id, name, description, price, image, quantity], (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return callback(err);
+        }
+
+        console.log('Query result:', result);
+        callback(null, result);
+    });
 };
 
-// Get all items from the cart
+
 export const getCartItems = (callback) => {
     const sql = "SELECT * FROM cart";
     query(sql, (err, items) => {
@@ -15,7 +25,6 @@ export const getCartItems = (callback) => {
     });
 };
 
-// Remove an item from the cart
 export const removeFromCart = (id, callback) => {
     const sql = "DELETE FROM cart WHERE id = ?";
     query(sql, [id], (err, result) => {

@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../components/product.css'
 const ProductListing = () => {
     const [products, setProducts] = useState([]);
+    const [expandedProduct, setExpandedProduct] = useState(null);
 
     useEffect(() => {
         axios.get('http://localhost:5000/products')
@@ -10,18 +11,30 @@ const ProductListing = () => {
             .catch(error => console.log('Error fetching products:', error));
     }, []);
 
-    const addToCart = (product) => {
-        axios.post('http://localhost:5000/cart', {
-            product_id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            image: product.image,
-            quantity: 1
-        })
-        .then(response => console.log(response.data.message))
-        .catch(error => console.log('Error adding to cart:', error));
+    const addToCart = async (product) => {
+        try {
+            const response = await axios.post('http://localhost:5000/cart', {
+                product_id: product.id,
+                name: product.name,
+                description: product.description,
+                price: product.price,
+                image: product.image,
+                quantity: 1
+            });
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Error adding product to cart');
+        }
     };
+    const handleReadMore = (productId) => {
+        setExpandedProduct(productId);
+    };
+
+    const handleReadLess = () => {
+        setExpandedProduct(null);
+    };
+    
 
     return (
         <div className="container my-5">
@@ -36,8 +49,18 @@ const ProductListing = () => {
                             />
                             <div className="card-body">
                                 <h5 className="card-title">{product.name}</h5>
-                                <p className="card-text">{product.description}</p>
-                                <p className="card-text">Price: <strong>${product.price.toFixed(2)}</strong></p>
+                                <p className="card-text">
+                                    {expandedProduct === product.id
+                                        ? product.description
+                                        : `${product.description.substring(0, 30)}${product.description.length > 50 ? '...' : ''}`
+                                    }
+                                    {product.description.length > 30 && (
+                                        expandedProduct === product.id
+                                            ? <span onClick={handleReadLess} style={{ cursor: 'pointer', color: 'blue' }}> Read Less</span>
+                                            : <span onClick={() => handleReadMore(product.id)} style={{ cursor: 'pointer', color: 'blue' }}> Read More</span>
+                                    )}
+                                </p>
+                                <p className="card-text">Price: <strong>₹{product.price.toFixed(2)}</strong></p>
                                 <button 
                                     className="btn btn-primary" 
                                     onClick={() => addToCart(product)}

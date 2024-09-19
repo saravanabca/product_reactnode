@@ -41,14 +41,14 @@ const Cart = () => {
                             <tr key={index}>
                                 <td>{item.name}</td>
                                 <td>{item.quantity}</td>
-                                <td>${item.price}</td>
-                                <td>${item.price * item.quantity}</td>
+                                <td>₹{item.price}</td>
+                                <td>₹{item.price * item.quantity}</td>
                                 <td>
                                     <img src={`http://localhost/admin/public//${item.image}`} alt={item.name} width="50" />
                                 </td>
                                 <td>
                                     <button className="btn btn-danger" onClick={() => removeFromCart(item.id)}>
-                                        Remove
+                                    Remove From Cart
                                     </button>
                                 </td>
                             </tr>
